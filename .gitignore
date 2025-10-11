@@ -1,0 +1,44 @@
+# Build artifacts
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/Makefile
+/cmake_install.cmake
+
+# Compiled object files
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Logs and runtime data
+*.log
+*.pid
+
+# Data directory (keep structure, ignore generated contents)
+data/*
+!data/.gitkeep
+
+# IDE and editor configs
+.vscode/
+.idea/
+*.swp
+*~
+*.user
+*.suo
+*.db
+*.DS_Store
+
+# Temporary or debug files
+*.tmp
+*.bak
+
+# System files (Mac / Linux)
+.DS_Store
+Thumbs.db
