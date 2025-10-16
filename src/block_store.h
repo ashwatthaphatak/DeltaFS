@@ -4,6 +4,7 @@
 #include <mutex>
 
 class BlockStore {
+    
 public:
     std::string write_block(const std::string& data);
     std::string read_block(const std::string& id);

@@ -71,7 +71,7 @@ int main() {
                 cout << "Invalid operation: " << operation << endl;
             }
         }
-        if (command == "snapshot"){
+        if (command == "snapshots"){
             string snapshotName;
             string operation;
             cout << "Enter operation (create/rollback/delete/list): ";
