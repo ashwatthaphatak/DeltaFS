@@ -3,12 +3,14 @@
 #include <unordered_map>
 #include <mutex>
 
+using namespace std;
+
 class BlockStore {
     
 public:
-    std::string write_block(const std::string& data);
-    std::string read_block(const std::string& id);
+    string write_block(const string& data);
+    string read_block(const string& id);
 private:
-    std::unordered_map<std::string, std::string> blocks;
-    std::mutex mtx;
+    unordered_map<string, string> blocks;
+    mutex mtx;
 };

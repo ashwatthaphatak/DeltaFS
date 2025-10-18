@@ -3,20 +3,29 @@
 #include <vector>
 #include <mutex>
 
+using namespace std;
+
+class BlockStore;
+class MetadataManager;
+
 struct JournalEntry {
-    std::string operation;
-    std::string filename;
-    std::string data;
+    string operation;
+    string filename;
+    string data;
     long timestamp;
 };
 
 class JournalManager {
 public:
-    void logOperation(const std::string& operation, const std::string& filename, const std::string& data = "");
-    std::vector<JournalEntry> getJournal();
+    explicit JournalManager(string log_path = "data/journal.log");
+
+    void log_operation(const string& operation, const string& filename, const string& data = "");
+    void replay(MetadataManager& metadata, BlockStore& block_store);
+    vector<JournalEntry> getJournal() const;
     void clearJournal();
-    
+
 private:
-    std::vector<JournalEntry> journal;
-    std::mutex mtx;
+    string log_path;
+    vector<JournalEntry> journal;
+    mutable mutex mtx;
 };
