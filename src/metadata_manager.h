@@ -5,27 +5,30 @@
 #include <vector>
 #include <mutex>
 
+using namespace std;
+
 class BlockStore;
 
 struct FileMetadata {
-    std::vector<std::string> block_ids;
-    std::size_t file_size{0};
+    vector<string> block_ids;
+    size_t file_size{0};
 };
 
 class MetadataManager {
 public:
     explicit MetadataManager(BlockStore& store);
 
-    void create_file(const std::string& name, const std::vector<std::string>& blocks);
-    std::vector<std::string> get_blocks(const std::string& name);
-    
-    bool createFile(const std::string& filename);
-    bool readFile(const std::string& filename, std::string& data);
-    bool updateFile(const std::string& filename, const std::string& data);
-    std::vector<std::string> listFiles();
+    bool createFile(const string& filename);
+    bool readFile(const string& filename, string& data);
+    bool updateFile(const string& filename, const string& data);
+    bool deleteFile(const string& filename);
+    bool fileExists(const string& filename) const;
+    vector<string> listFiles() const;
+    unordered_map<string, FileMetadata> exportFileTable() const;
+    void importFileTable(const unordered_map<string, FileMetadata>& table);
     
 private:
-    std::unordered_map<std::string, FileMetadata> files;
-    std::mutex mtx;
+    unordered_map<string, FileMetadata> files;
+    mutable mutex mtx;
     BlockStore& blockStore;
 };
