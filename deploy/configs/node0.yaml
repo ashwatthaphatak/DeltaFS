@@ -1,0 +1,13 @@
+node_id: node0
+listen_address: 0.0.0.0:50051
+advertised_address: node0:50051
+leader_id: node0
+ack_policy: majority
+data_dir: /var/lib/deltafs
+membership_provider: compose
+rpc_timeout_ms: 1500
+max_retries: 2
+peers:
+  - node0=node0:50051
+  - node1=node1:50051
+  - node2=node2:50051

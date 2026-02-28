@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package deltafs.v1;
+
+import "common.proto";
+
+service MetadataService {
+  rpc PutKey(PutKeyRequest) returns (PutKeyResponse);
+  rpc GetKey(GetKeyRequest) returns (GetKeyResponse);
+}
+
+message PutKeyRequest {
+  RequestContext context = 1;
+  string key = 2;
+  bytes value = 3;
+  uint64 root_version_context = 4;
+}
+
+message PutKeyResponse {
+  ErrorStatus error = 1;
+  bool applied = 2;
+  uint64 lsn = 3;
+  uint64 root_version = 4;
+  string block_id = 5;
+}
+
+message GetKeyRequest {
+  RequestContext context = 1;
+  string key = 2;
+  string snapshot_id = 3;
+  uint64 root_version = 4;
+}
+
+message GetKeyResponse {
+  ErrorStatus error = 1;
+  bool found = 2;
+  string block_id = 3;
+  bytes value = 4;
+  uint64 root_version = 5;
+}

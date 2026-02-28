@@ -1,0 +1,60 @@
+services:
+  node0:
+    build:
+      context: ../..
+      dockerfile: deploy/Dockerfile
+    image: deltafs:dev
+    container_name: deltafs-node0
+    command: ["--config", "/etc/deltafs/node0.yaml"]
+    ports:
+      - "50051:50051"
+    volumes:
+      - ../configs/node0.yaml:/etc/deltafs/node0.yaml:ro
+      - node0-data:/var/lib/deltafs
+    healthcheck:
+      test: ["CMD", "deltafs_ctl", "--endpoint", "127.0.0.1:50051", "--node-id", "healthcheck", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  node1:
+    image: deltafs:dev
+    container_name: deltafs-node1
+    command: ["--config", "/etc/deltafs/node1.yaml"]
+    ports:
+      - "50052:50051"
+    depends_on:
+      - node0
+    volumes:
+      - ../configs/node1.yaml:/etc/deltafs/node1.yaml:ro
+      - node1-data:/var/lib/deltafs
+    healthcheck:
+      test: ["CMD", "deltafs_ctl", "--endpoint", "127.0.0.1:50051", "--node-id", "healthcheck", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  node2:
+    image: deltafs:dev
+    container_name: deltafs-node2
+    command: ["--config", "/etc/deltafs/node2.yaml"]
+    ports:
+      - "50053:50051"
+    depends_on:
+      - node0
+    volumes:
+      - ../configs/node2.yaml:/etc/deltafs/node2.yaml:ro
+      - node2-data:/var/lib/deltafs
+    healthcheck:
+      test: ["CMD", "deltafs_ctl", "--endpoint", "127.0.0.1:50051", "--node-id", "healthcheck", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+volumes:
+  node0-data:
+  node1-data:
+  node2-data:
