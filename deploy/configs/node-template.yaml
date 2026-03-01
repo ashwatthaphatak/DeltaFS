@@ -1,0 +1,14 @@
+node_id: ${NODE_ID}
+listen_address: 0.0.0.0:50051
+advertised_address: ${NODE_ID}.deltafs-headless.default.svc.cluster.local:50051
+leader_id: deltafs-0
+ack_policy: majority
+data_dir: /var/lib/deltafs
+membership_provider: k8s
+rpc_timeout_ms: 500
+max_retries: 1
+statefulset_name: deltafs
+headless_service: deltafs-headless
+namespace_name: default
+replicas: 3
+grpc_port: 50051

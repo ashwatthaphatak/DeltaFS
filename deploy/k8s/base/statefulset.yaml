@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: deltafs
+  labels:
+    app: deltafs
+spec:
+  serviceName: deltafs-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: deltafs
+  template:
+    metadata:
+      labels:
+        app: deltafs
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: deltafs
+          image: deltafs:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: grpc
+              containerPort: 50051
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cat >/tmp/node.yaml <<CFG
+              node_id: ${POD_NAME}
+              listen_address: 0.0.0.0:50051
+              advertised_address: ${POD_NAME}.deltafs-headless.${POD_NAMESPACE}.svc.cluster.local:50051
+              leader_id: deltafs-0
+              ack_policy: majority
+              data_dir: /var/lib/deltafs
+              membership_provider: k8s
+              rpc_timeout_ms: 500
+              max_retries: 1
+              statefulset_name: deltafs
+              headless_service: deltafs-headless
+              namespace_name: ${POD_NAMESPACE}
+              replicas: 3
+              grpc_port: 50051
+              CFG
+              exec /usr/local/bin/deltafs_node --config /tmp/node.yaml
+          readinessProbe:
+            exec:
+              command:
+                - /usr/local/bin/deltafs_ctl
+                - --endpoint
+                - 127.0.0.1:50051
+                - --node-id
+                - probe
+                - status
+            initialDelaySeconds: 8
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 8
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/deltafs_ctl
+                - --endpoint
+                - 127.0.0.1:50051
+                - --node-id
+                - probe
+                - status
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/deltafs
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

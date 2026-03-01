@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package deltafs.v1;
+
+import "common.proto";
+
+enum WalOperation {
+  WAL_OPERATION_UNSPECIFIED = 0;
+  WAL_OPERATION_PUT_KEY = 1;
+  WAL_OPERATION_CREATE_SNAPSHOT = 2;
+  WAL_OPERATION_FORCE_CONSISTENCY_POINT = 3;
+}
+
+message WalEntry {
+  uint64 lsn = 1;
+  string request_id = 2;
+  string origin_node_id = 3;
+  WalOperation operation = 4;
+  string key = 5;
+  string block_id = 6;
+  bytes value = 7;
+  uint64 base_root_version = 8;
+  uint64 new_root_version = 9;
+  string snapshot_id = 10;
+  string snapshot_name = 11;
+  int64 timestamp_unix_ms = 12;
+}
+
+message AppendEntriesRequest {
+  RequestContext context = 1;
+  string leader_id = 2;
+  uint64 prev_lsn = 3;
+  uint64 leader_commit = 4;
+  repeated WalEntry entries = 5;
+}
+
+message AppendEntriesResponse {
+  ErrorStatus error = 1;
+  bool success = 2;
+  uint64 last_lsn = 3;
+  uint64 commit_index = 4;
+}
+
+service ReplicationService {
+  rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesResponse);
+}

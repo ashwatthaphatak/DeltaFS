@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package deltafs.v1;
+
+import "common.proto";
+
+service BlockStoreService {
+  rpc PutBlock(PutBlockRequest) returns (PutBlockResponse);
+  rpc GetBlock(GetBlockRequest) returns (GetBlockResponse);
+}
+
+message PutBlockRequest {
+  RequestContext context = 1;
+  bytes data = 2;
+}
+
+message PutBlockResponse {
+  ErrorStatus error = 1;
+  string block_id = 2;
+}
+
+message GetBlockRequest {
+  RequestContext context = 1;
+  string block_id = 2;
+}
+
+message GetBlockResponse {
+  ErrorStatus error = 1;
+  bool found = 2;
+  bytes data = 3;
+}

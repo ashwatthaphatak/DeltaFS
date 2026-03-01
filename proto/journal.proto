@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package deltafs.v1;
+
+import "common.proto";
+import "replication.proto";
+
+service JournalService {
+  rpc AppendEntry(AppendEntryRequest) returns (AppendEntryResponse);
+  rpc GetJournalStatus(GetJournalStatusRequest) returns (GetJournalStatusResponse);
+}
+
+message AppendEntryRequest {
+  RequestContext context = 1;
+  WalEntry entry = 2;
+}
+
+message AppendEntryResponse {
+  ErrorStatus error = 1;
+  uint64 lsn = 2;
+}
+
+message GetJournalStatusRequest {
+  RequestContext context = 1;
+}
+
+message GetJournalStatusResponse {
+  ErrorStatus error = 1;
+  uint64 last_lsn = 2;
+  uint64 commit_index = 3;
+  uint64 last_applied = 4;
+  uint64 committed_root = 5;
+  WalEntry last_entry = 6;
+}

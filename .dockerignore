@@ -1,0 +1,11 @@
+.git
+.gitignore
+build/
+cmake-build-*/
+out/
+*.o
+*.a
+*.so
+*.swp
+*.tmp
+data/
