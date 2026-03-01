@@ -5,8 +5,8 @@ leader_id: node0
 ack_policy: majority
 data_dir: /var/lib/deltafs
 membership_provider: compose
-rpc_timeout_ms: 1500
-max_retries: 2
+rpc_timeout_ms: 500
+max_retries: 1
 peers:
   - node0=node0:50051
   - node1=node1:50051

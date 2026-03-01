@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
+    pkg-config \
     protobuf-compiler \
     protobuf-compiler-grpc \
     libprotobuf-dev \
@@ -17,10 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /workspace
 COPY . /workspace
 
-RUN cmake -S . -B build \
- && cmake --build build -j$(nproc) \
- && install -m 0755 build/deltafs_node /usr/local/bin/deltafs_node \
- && install -m 0755 build/deltafs_ctl /usr/local/bin/deltafs_ctl
+RUN rm -rf /tmp/deltafs-build \
+ && cmake -S /workspace -B /tmp/deltafs-build \
+ && cmake --build /tmp/deltafs-build -j$(nproc) \
+ && install -m 0755 /tmp/deltafs-build/deltafs_node /usr/local/bin/deltafs_node \
+ && install -m 0755 /tmp/deltafs-build/deltafs_ctl /usr/local/bin/deltafs_ctl
 
 EXPOSE 50051
 VOLUME ["/var/lib/deltafs"]

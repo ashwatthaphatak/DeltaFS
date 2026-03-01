@@ -32,6 +32,9 @@ Milestone 1 is intentionally minimal and correctness-first:
 - Snapshot Manager: snapshot ID -> root version.
 - Dedupe Store: persisted `request_id` table under `/var/lib/deltafs/dedupe`.
 
+## Architecture
+For a top-down architecture walkthrough tied directly to concrete implementation files, see `architecture.md`.
+
 Persistent layout on each node:
 - `/var/lib/deltafs/blocks`
 - `/var/lib/deltafs/wal`

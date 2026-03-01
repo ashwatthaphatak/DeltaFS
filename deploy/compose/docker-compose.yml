@@ -20,6 +20,7 @@ services:
 
   node1:
     image: deltafs:dev
+    pull_policy: never
     container_name: deltafs-node1
     command: ["--config", "/etc/deltafs/node1.yaml"]
     ports:
@@ -38,6 +39,7 @@ services:
 
   node2:
     image: deltafs:dev
+    pull_policy: never
     container_name: deltafs-node2
     command: ["--config", "/etc/deltafs/node2.yaml"]
     ports:

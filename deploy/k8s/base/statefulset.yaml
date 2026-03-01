@@ -44,8 +44,8 @@ spec:
               ack_policy: majority
               data_dir: /var/lib/deltafs
               membership_provider: k8s
-              rpc_timeout_ms: 1500
-              max_retries: 2
+              rpc_timeout_ms: 500
+              max_retries: 1
               statefulset_name: deltafs
               headless_service: deltafs-headless
               namespace_name: ${POD_NAMESPACE}

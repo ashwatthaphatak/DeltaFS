@@ -26,13 +26,13 @@ kubectl wait --for=condition=Ready pod/deltafs-0 pod/deltafs-1 pod/deltafs-2 --t
 kctl() {
   local pod="$1"
   shift
-  kubectl exec "${pod}" -- deltafs_ctl --endpoint deltafs-0.deltafs-headless:50051 --node-id demo "$@"
+  kubectl exec "${pod}" -- deltafs_ctl --endpoint deltafs-0.deltafs-headless:50051 --node-id demo --timeout-ms 8000 "$@"
 }
 
 kctl_local() {
   local pod="$1"
   shift
-  kubectl exec "${pod}" -- deltafs_ctl --endpoint 127.0.0.1:50051 --node-id demo "$@"
+  kubectl exec "${pod}" -- deltafs_ctl --endpoint 127.0.0.1:50051 --node-id demo --timeout-ms 8000 "$@"
 }
 
 kctl deltafs-0 status

@@ -10,15 +10,16 @@ compose() {
 }
 
 ctl_node0() {
-  compose exec -T node0 deltafs_ctl --endpoint node0:50051 --node-id demo "$@"
+  compose exec -T node0 deltafs_ctl --endpoint node0:50051 --node-id demo --timeout-ms 8000 "$@"
 }
 
 ctl_node1_local() {
-  compose exec -T node1 deltafs_ctl --endpoint 127.0.0.1:50051 --node-id demo "$@"
+  compose exec -T node1 deltafs_ctl --endpoint 127.0.0.1:50051 --node-id demo --timeout-ms 8000 "$@"
 }
 
 echo "[demo_compose] starting 3-node cluster"
-compose up -d --build
+compose build node0
+compose up -d
 
 for i in {1..30}; do
   if ctl_node0 status >/dev/null 2>&1; then

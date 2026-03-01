@@ -6,10 +6,35 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Protobuf REQUIRED)
-find_package(gRPC REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Threads REQUIRED)
 find_library(UUID_LIBRARY uuid REQUIRED)
+find_package(PkgConfig QUIET)
+
+find_package(gRPC CONFIG QUIET)
+if(gRPC_FOUND)
+  set(DELTAFS_GRPC_LINK_TARGET gRPC::grpc++)
+  set(DELTAFS_GRPC_CPP_PLUGIN $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
+else()
+  if(PkgConfig_FOUND)
+    pkg_check_modules(GRPCPP QUIET grpc++)
+  endif()
+  find_program(DELTAFS_GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin REQUIRED)
+
+  add_library(deltafs_grpcpp INTERFACE)
+  if(GRPCPP_FOUND)
+    target_include_directories(deltafs_grpcpp INTERFACE ${GRPCPP_INCLUDE_DIRS})
+    target_link_directories(deltafs_grpcpp INTERFACE ${GRPCPP_LIBRARY_DIRS})
+    target_link_libraries(deltafs_grpcpp INTERFACE ${GRPCPP_LIBRARIES})
+  else()
+    find_library(GRPCPP_LIBRARY NAMES grpc++ REQUIRED)
+    find_library(GRPC_LIBRARY NAMES grpc REQUIRED)
+    target_link_libraries(deltafs_grpcpp INTERFACE ${GRPCPP_LIBRARY} ${GRPC_LIBRARY})
+  endif()
+
+  set(DELTAFS_GRPC_LINK_TARGET deltafs_grpcpp)
+  set(DELTAFS_GRPC_CPP_PLUGIN ${DELTAFS_GRPC_CPP_PLUGIN_EXECUTABLE})
+endif()
 
 set(PROTO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/proto)
 set(GENERATED_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
@@ -43,7 +68,7 @@ foreach(PROTO_FILE ${PROTO_FILES})
       --proto_path=${PROTO_SRC_DIR}
       --cpp_out=${GENERATED_DIR}
       --grpc_out=${GENERATED_DIR}
-      --plugin=protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>
+      --plugin=protoc-gen-grpc=${DELTAFS_GRPC_CPP_PLUGIN}
       ${PROTO_ABS}
     DEPENDS ${PROTO_ABS}
     VERBATIM
@@ -57,7 +82,7 @@ add_library(deltafs_proto ${PROTO_SRCS} ${PROTO_HDRS})
 target_include_directories(deltafs_proto PUBLIC ${GENERATED_DIR})
 target_link_libraries(deltafs_proto
   PUBLIC
-    gRPC::grpc++
+    ${DELTAFS_GRPC_LINK_TARGET}
     protobuf::libprotobuf
 )
 
